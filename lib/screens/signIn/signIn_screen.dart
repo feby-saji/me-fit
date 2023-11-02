@@ -1,14 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:me_fit/DB/hive_function.dart';
 import 'package:me_fit/DB/shared_pref.dart';
 import 'package:me_fit/Models/hive_models/user_details.dart';
-import 'package:me_fit/screens/home_screen.dart';
-import 'package:me_fit/screens/register_or_login_screen.dart';
-import 'package:me_fit/screens/splash_screen.dart';
+import 'package:me_fit/main.dart';
+import 'package:me_fit/screens/home/home_screen.dart';
+import 'package:me_fit/screens/signIn/functions/google_singIN.dart';
+import 'package:me_fit/screens/signIn/functions/register_login_btn.dart';
+import 'package:me_fit/screens/splash/functions/get_user_img_name.dart';
 import 'package:me_fit/styles/size_config.dart';
 import 'package:me_fit/styles/styles.dart';
 import 'package:me_fit/widgets/g_signIn_btn.dart';
@@ -83,11 +83,11 @@ class SignInScreen extends StatelessWidget {
                           stepsGoal.notifyListeners();
 
                           await signInWithGoogle(context);
-                          await SplashScreenState().getUserImgAndName();
+                          await getUserImgAndName();
                           await hiveDb.getCaloriesBurnedToday();
                           await hiveDb.getCaloriesBurnedTotal();
                           hiveDb.getLastWorkout();
-
+                          googleUser = true;
                           Get.offAll(() => HomeScreen(
                                 stepsToday: user.dailySteps,
                                 distanceToday: user.distanceToday,
@@ -103,52 +103,7 @@ class SignInScreen extends StatelessWidget {
                     ),
                     SizedBox(height: sizeConfig.blockSizeVertical * 2),
 // register  &  login
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          GestureDetector(
-                            onTap: () => Get.to(() =>
-                                const RegisterOrLoginScreen(isRegister: true)),
-                            child: Container(
-                              width: sizeConfig.blockSizeHorizontal * 40,
-                              height: sizeConfig.blockSizeHorizontal * 10,
-                              decoration: BoxDecoration(
-                                color: kprimaryClr,
-                                // border: Border.all(width: 1, color: kBorderClr),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'register',
-                                  style: kDmSansFont.copyWith(
-                                      fontSize:
-                                          sizeConfig.blockSizeHorizontal * 4),
-                                ),
-                              ),
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => Get.to(() =>
-                                const RegisterOrLoginScreen(isRegister: false)),
-                            child: Container(
-                              width: sizeConfig.blockSizeHorizontal * 40,
-                              height: sizeConfig.blockSizeHorizontal * 10,
-                              decoration: BoxDecoration(
-                                color: kprimaryClr,
-                                // border: Border.all(width: 1, color: kBorderClr),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Login',
-                                  style: kDmSansFont.copyWith(
-                                      fontSize:
-                                          sizeConfig.blockSizeHorizontal * 4),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ]),
+                    RegisterLoginBtnWidget(sizeConfig: sizeConfig),
                   ],
                 )
               ],
@@ -157,22 +112,5 @@ class SignInScreen extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Future<UserCredential> signInWithGoogle(context) async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth =
-        await googleUser?.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 }

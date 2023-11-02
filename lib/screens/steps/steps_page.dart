@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:me_fit/DB/hive_function.dart';
-import 'package:me_fit/Models/hive_models/user_details.dart';
-import 'package:me_fit/screens/home_screen.dart';
+import 'package:me_fit/screens/steps/widgets/closeBtn.dart';
 import 'package:me_fit/styles/styles.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:async';
@@ -17,22 +14,18 @@ class StepsTrackerScreen extends StatefulWidget {
       {super.key, required this.userWeight, required this.userHeightInMeters});
 
   @override
-  State<StepsTrackerScreen> createState() => _StepsTrackerScreenState();
+  State<StepsTrackerScreen> createState() => StepsTrackerScreenState();
 }
 
-String formatDate(DateTime d) {
-  return d.toString().substring(0, 19);
-}
-
-class _StepsTrackerScreenState extends State<StepsTrackerScreen> {
+class StepsTrackerScreenState extends State<StepsTrackerScreen> {
   HiveDb db = HiveDb();
-  late Stream<StepCount> _stepCountStream;
   late bool activityRecognitionGranded;
+  late Stream<StepCount> _stepCountStream;
   int _stepCurrent = 0;
   int _totalSteps = 0;
   int _caloriesBurnedToday = 0;
 
-  initLastStep() async {}
+  // initLastStep() async {}
 
   void onStepCount(StepCount event) async {
     db.setLastStep(event.steps);
@@ -55,7 +48,6 @@ class _StepsTrackerScreenState extends State<StepsTrackerScreen> {
             (time * MET * 3.5 * widget.userWeight / (200 * 60)).round();
       });
     }
-
     // when sensor value is 0
     if (_totalSteps == 0) {
       db.setLastStep(1);
@@ -90,7 +82,6 @@ class _StepsTrackerScreenState extends State<StepsTrackerScreen> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _caloriesBurnedToday = 0;
   }
@@ -121,10 +112,6 @@ class _StepsTrackerScreenState extends State<StepsTrackerScreen> {
               _stepCurrent.abs().toString(),
               style: const TextStyle(fontSize: 30),
             ),
-            // Text(
-            //   _totalSteps.toString(),
-            //   style: kMedText.copyWith(color: Colors.black),
-            // ),
             const Divider(
               height: 10,
               thickness: 0,
@@ -133,32 +120,11 @@ class _StepsTrackerScreenState extends State<StepsTrackerScreen> {
             Text(
                 'calories burned : ${_caloriesBurnedToday.abs().round().toString()}'),
             const Spacer(),
-            IconButton(
-                onPressed: () async {
-                  Box<UserBodyDetails> box =
-                      await Hive.openBox<UserBodyDetails>('userBodyDetailsBox');
-                  UserBodyDetails? user = box.get('userbodydetails');
-                  await db.setLastStep(_totalSteps);
-                  print('_totalsteps $_totalSteps');
-                  await db.setTodaySteps(_stepCurrent.abs());
-                  await db.setCaloriesBurnedTotal(_caloriesBurnedToday);
-                  await db.setCaloriesBurnedToday(_caloriesBurnedToday);
-
-                  print(' today _caloriesBurnedToday$_caloriesBurnedToday');
-
-                  // print(' printng steps saving to db ${_stepCurrent.abs()}');
-                  Get.offAll(HomeScreen(
-                    stepsToday: user!.dailySteps,
-                    totalSteps: user.totalSteps,
-                    distanceToday: user.distanceToday,
-                  ));
-
-                  // Get.back();
-                },
-                icon: const Icon(
-                  Icons.close,
-                  size: 50,
-                )),
+            CloseBtnWidget(
+                db: db,
+                totalSteps: _totalSteps,
+                stepCurrent: _stepCurrent,
+                caloriesBurnedToday: _caloriesBurnedToday),
             const SizedBox(height: 20),
           ],
         ),

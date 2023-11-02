@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:me_fit/Models/hive_models/user_details.dart';
 import 'package:me_fit/Models/hive_models/workout_record.dart';
-import 'package:me_fit/screens/home_screen.dart';
+import 'package:me_fit/screens/home/home_screen.dart';
 
 class HiveDb {
   //boxes

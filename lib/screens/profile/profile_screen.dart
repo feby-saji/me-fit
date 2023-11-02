@@ -1,19 +1,12 @@
 import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:me_fit/DB/hive_function.dart';
-import 'package:me_fit/DB/shared_pref.dart';
-import 'package:me_fit/Models/hive_models/user_profile_details.dart';
 import 'package:me_fit/main.dart';
-import 'package:me_fit/screens/bmi_screen.dart';
-import 'package:me_fit/screens/goals_page.dart';
-import 'package:me_fit/screens/privacy_policy.dart';
-import 'package:me_fit/screens/signIn_screen.dart';
+import 'package:me_fit/screens/bmi/bmi_screen.dart';
+import 'package:me_fit/screens/goals/goals_page.dart';
+import 'package:me_fit/screens/privacy_policy/privacy_policy.dart';
+import 'package:me_fit/screens/profile/functions/change_image.dart';
+import 'package:me_fit/screens/profile/functions/show_log_out.dart';
 import 'package:me_fit/styles/size_config.dart';
 import 'package:me_fit/styles/styles.dart';
 import 'package:me_fit/widgets/profile_page.dart';
@@ -36,12 +29,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Center(child: Text('Account')),
-        ),
         body: Stack(
           children: [
             Column(children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pop(context),
+                    icon: const Icon(
+                      Icons.chevron_left,
+                      size: 35,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const Text(
+                    'Account',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                    ),
+                  ),
+                  const SizedBox(width: 50),
+                ],
+              ),
+//
+
               const SizedBox(height: 40),
               Center(
                 child: GestureDetector(
@@ -79,6 +92,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             )),
                 ),
               ),
+
               const SizedBox(height: 40),
               Text(
                 userName.value,
@@ -103,15 +117,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 onTap: () => Get.to(() => const BMICalculationScreen()),
               ),
               OptionsWidget(
-                icon: FluentIcons.calculator_arrow_clockwise_20_filled,
+                icon: FluentIcons.form_20_filled,
                 title: 'privacy policy',
                 onTap: () => Get.to(() => const PrivacyPolicyPage()),
               ),
               OptionsWidget(
-                icon: FluentIcons.calculator_arrow_clockwise_20_filled,
+                icon: Icons.logout,
                 title: 'log out',
                 onTap: () async {
-                  showLogOut();
+                  showLogOut(context);
                 },
               ),
             ]),
@@ -119,73 +133,5 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
-  }
-
-  changeImage() async {
-    try {
-      final image = await ImagePicker().pickImage(source: ImageSource.gallery);
-      if (image == null) return;
-      final imageTemp = File(image.path);
-      userImgPathFile.value = imageTemp;
-      userImgPathFile.notifyListeners();
-
-      HiveDb hiveDb = HiveDb();
-      Box<ModelOfUserProfileDetails> userProfileDetails =
-          await Hive.openBox<ModelOfUserProfileDetails>(
-        hiveDb.userProfileDetailsKey,
-      );
-      SharedPreferenceDb sharedPref = SharedPreferenceDb();
-      await sharedPref.initPref();
-      String email = await sharedPref.getUserEmail();
-      print('email $email');
-      ModelOfUserProfileDetails? model = userProfileDetails.get(email);
-
-      // if (model != null) {
-      //   print('updating umage now ');
-      model!.imagePath = image.path;
-      await userProfileDetails.put(model.email, model);
-      //   print('the imgae ${model.imagePath}');
-      // }
-    } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
-    }
-  }
-
-  showLogOut() {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('log out ?'),
-            actions: [
-              IconButton(
-                  onPressed: () async => await logOutFunc(),
-                  icon: const Icon(FluentIcons.sign_out_20_regular)),
-              IconButton(
-                  onPressed: () => Navigator.pop(context),
-                  icon: const Icon(Icons.close))
-            ],
-          );
-        });
-  }
-
-  logOutFunc() async {
-    showDialog(
-        context: context,
-        builder: (context) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        });
-
-    if (FirebaseAuth.instance.currentUser != null) {
-      await FirebaseAuth.instance.signOut();
-    }
-
-    SharedPreferenceDb sharedPreferenceDb = SharedPreferenceDb();
-    await sharedPreferenceDb.initPref();
-    sharedPreferenceDb.setAuthentication(false);
-    // Navigator.pop(context);
-    Get.offAll(() => const SignInScreen());
   }
 }

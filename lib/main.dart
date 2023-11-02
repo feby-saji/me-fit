@@ -6,12 +6,9 @@ import 'package:me_fit/Models/hive_models/user_details.dart';
 import 'package:me_fit/Models/hive_models/workout_record.dart';
 import 'package:me_fit/Models/hive_models/user_profile_details.dart';
 import 'package:me_fit/Models/workout_model.dart';
-import 'package:me_fit/screens/bmi_screen.dart';
-import 'package:me_fit/screens/home_screen.dart';
-import 'package:me_fit/screens/splash_screen.dart';
+import 'package:me_fit/screens/splash/splash_screen.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:pedometer/pedometer.dart';
 import 'firebase_options.dart';
 
 List<WorkoutModel> allBodyPartWorkouts = [];

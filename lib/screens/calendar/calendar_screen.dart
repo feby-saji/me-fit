@@ -42,15 +42,17 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   child: SizedBox(
                       height: 400,
                       child: CalendarCarousel(
+                        weekdayTextStyle: const TextStyle(color: Colors.black),
+                        // headerText: 'haio',
+                        headerTextStyle:
+                            const TextStyle(color: Colors.black, fontSize: 20),
                         onDayPressed: (date, events) {
                           setState(() {
                             selectedDate = date;
                           });
                         },
                         selectedDateTime: selectedDate,
-                        weekendTextStyle: const TextStyle(
-                          color: Colors.black,
-                        ),
+                        weekendTextStyle: const TextStyle(color: Colors.black),
                       )),
                 ),
                 Expanded(
@@ -62,24 +64,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           topRight: Radius.circular(50),
                         )),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(
-                              top: 50, left: 30, right: 30),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Workouts',
-                                style: kMedText.copyWith(
-                                    color: Colors.black, fontSize: 21),
-                              ),
-                              Text(
-                                'see all',
-                                style: kMedText.copyWith(
-                                    color: Colors.black, fontSize: 21),
-                              ),
-                            ],
+                            top: 50,
+                          ),
+                          child: SizedBox(
+                            width: 300,
+                            child: Text(
+                              'Workouts',
+                              textAlign: TextAlign.left,
+                              style: kMedText.copyWith(
+                                  color: Colors.black, fontSize: 21),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -95,11 +93,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
                                 if (records.isEmpty) {
                                   return const Center(
-                                    child: Text(
-                                      'no records found',
-                                      style: TextStyle(color: Colors.black),
-                                    ),
-                                  );
+                                      child: Text('no records found',
+                                          style:
+                                              TextStyle(color: Colors.black)));
                                 } else {
                                   return Expanded(
                                     child: ListView.separated(
@@ -131,11 +127,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   ConnectionState.waiting) {
                                 return const Center(
                                   child: CircularProgressIndicator(
-                                    color: Colors.blue,
-                                  ),
+                                      color: Colors.blue),
                                 );
                               }
-
                               return const Center(
                                 child: Text(
                                   'no records found',

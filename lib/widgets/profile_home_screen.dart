@@ -6,10 +6,10 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:me_fit/DB/shared_pref.dart';
 import 'package:me_fit/main.dart';
-import 'package:me_fit/screens/calendar_screen.dart';
-import 'package:me_fit/screens/home_screen.dart';
-import 'package:me_fit/screens/profile_screen.dart';
-import 'package:me_fit/screens/signIn_screen.dart';
+import 'package:me_fit/screens/calendar/calendar_screen.dart';
+import 'package:me_fit/screens/home/home_screen.dart';
+import 'package:me_fit/screens/profile/profile_screen.dart';
+import 'package:me_fit/screens/signIn/signIn_screen.dart';
 import 'package:me_fit/styles/styles.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 

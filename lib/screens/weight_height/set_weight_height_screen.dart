@@ -6,10 +6,10 @@ class HeightAndWeightInput extends StatefulWidget {
   const HeightAndWeightInput({super.key});
 
   @override
-  _HeightAndWeightInputState createState() => _HeightAndWeightInputState();
+  HeightAndWeightInputState createState() => HeightAndWeightInputState();
 }
 
-class _HeightAndWeightInputState extends State<HeightAndWeightInput> {
+class HeightAndWeightInputState extends State<HeightAndWeightInput> {
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _weightController = TextEditingController();
 

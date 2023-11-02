@@ -1,22 +1,24 @@
-import 'dart:ffi';
+// ignore_for_file: must_be_immutable
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:me_fit/DB/hive_function.dart';
 import 'package:me_fit/Models/hive_models/user_details.dart';
-import 'package:me_fit/screens/home_screen.dart';
+import 'package:me_fit/screens/goals/choice_chip.dart';
+import 'package:me_fit/screens/home/home_screen.dart';
 import 'package:me_fit/styles/styles.dart';
+import 'package:me_fit/screens/home/functions/updateGoalCompletePerc.dart';
 
 class DailyStepsInputPage extends StatefulWidget {
   bool goToHome;
   DailyStepsInputPage({super.key, required this.goToHome});
 
   @override
-  _DailyStepsInputPageState createState() => _DailyStepsInputPageState();
+  DailyStepsInputPageState createState() => DailyStepsInputPageState();
 }
 
-class _DailyStepsInputPageState extends State<DailyStepsInputPage> {
+class DailyStepsInputPageState extends State<DailyStepsInputPage> {
   final TextEditingController _stepsController = TextEditingController();
   double _dailyDistance = 0;
   int steptoAddToCtrl = 0;
@@ -55,11 +57,11 @@ class _DailyStepsInputPageState extends State<DailyStepsInputPage> {
       calcDailySteps();
     });
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Daily Steps '),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
+        appBar: AppBar(
+          title: const Text('Daily Steps '),
+        ),
+        body: SingleChildScrollView(
+            child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -78,62 +80,31 @@ class _DailyStepsInputPageState extends State<DailyStepsInputPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  GestureDetector(
-                    onTap: () {
+                  ChoiceChipWidget(
+                    function: () {
                       steptoAddToCtrl = int.parse(_stepsController.text);
                       steptoAddToCtrl += 1000;
                       _stepsController.text = steptoAddToCtrl.toString();
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.black12,
-                      ),
-                      child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        child: Text('+ 1,000'),
-                      ),
-                    ),
+                    value: '1000',
                   ),
 // 2
-
-                  GestureDetector(
-                    onTap: () {
+                  ChoiceChipWidget(
+                    function: () {
                       steptoAddToCtrl = int.parse(_stepsController.text);
                       steptoAddToCtrl += 5000;
                       _stepsController.text = steptoAddToCtrl.toString();
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.black12,
-                      ),
-                      child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        child: Text('+ 5,000'),
-                      ),
-                    ),
+                    value: '5,000',
                   ),
 // 3
-                  GestureDetector(
-                    onTap: () {
+                  ChoiceChipWidget(
+                    function: () {
                       steptoAddToCtrl = int.parse(_stepsController.text);
                       steptoAddToCtrl += 10000;
                       _stepsController.text = steptoAddToCtrl.toString();
                     },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.black12,
-                      ),
-                      child: const Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        child: Text('+ 10,000'),
-                      ),
-                    ),
+                    value: '10,000',
                   ),
                 ],
               ),
@@ -142,30 +113,34 @@ class _DailyStepsInputPageState extends State<DailyStepsInputPage> {
               Center(
                 child: ElevatedButton(
                   onPressed: () async {
-                    await setDailySteps();
-                    Box<UserBodyDetails> box =
-                        await Hive.openBox<UserBodyDetails>(
-                            'userBodyDetailsBox');
-                    UserBodyDetails? user = box.get('userbodydetails');
+                    if (steptoAddToCtrl > 0) {
+                      await setDailySteps();
+                      Box<UserBodyDetails> box =
+                          await Hive.openBox<UserBodyDetails>(
+                              'userBodyDetailsBox');
+                      UserBodyDetails? user = box.get('userbodydetails');
 // notify listeners
+                      caloriesBurnedTotal.value = user!.totalCaloriesBurned;
+                      caloriesBurnedTotal.notifyListeners();
+                      caloriesBurnedToday.value = user.caloriesBurnedToday;
+                      caloriesBurnedTotal.notifyListeners();
 
-                    caloriesBurnedTotal.value = user!.totalCaloriesBurned;
-                    caloriesBurnedTotal.notifyListeners();
-                    caloriesBurnedToday.value = user.caloriesBurnedToday;
-                    caloriesBurnedTotal.notifyListeners();
-                   
-
-                    print('printing stepsGoal.value ${stepsGoal.value}');
-                    await HomeScreenState().updateGoalCompletePerc();
-
-                    if (widget.goToHome) {
-                      Get.offAll(HomeScreen(
-                        stepsToday: user.dailySteps,
-                        totalSteps: user.totalSteps,
-                        distanceToday: user.distanceToday,
-                      ));
+                      await updateGoalCompletePercentage();
+                      if (widget.goToHome) {
+                        Get.offAll(HomeScreen(
+                          stepsToday: user.dailySteps,
+                          totalSteps: user.totalSteps,
+                          distanceToday: user.distanceToday,
+                        ));
+                      } else {
+                        Get.back();
+                      }
                     } else {
-                      Get.back();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('invalid goal'),
+                        ),
+                      );
                     }
                   },
                   child: const Text('Set Daily Steps'),
@@ -178,8 +153,6 @@ class _DailyStepsInputPageState extends State<DailyStepsInputPage> {
               ),
             ],
           ),
-        ),
-      ),
-    );
+        )));
   }
 }
