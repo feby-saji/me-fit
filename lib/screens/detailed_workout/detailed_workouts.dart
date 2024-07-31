@@ -1,13 +1,13 @@
 // ignore_for_file: must_be_immutable
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:flutter/material.dart';
 import 'package:me_fit/Models/workout_model.dart';
 import 'package:me_fit/main.dart';
 import 'package:me_fit/screens/detailed_workout/widgets/detailedWorkOut.dart';
 
-import 'package:neon_circular_timer/neon_circular_timer.dart';
 
 ValueNotifier<String> status = ValueNotifier('REST');
-final CountDownController timerController = CountDownController();
+  final CountDownController timerController = CountDownController();
 bool isPlaying = true;
 late int modelID;
 int workOutSet = 1;

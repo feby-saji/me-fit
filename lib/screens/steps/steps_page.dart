@@ -3,8 +3,6 @@ import 'package:me_fit/DB/hive_function.dart';
 import 'package:me_fit/screens/steps/widgets/closeBtn.dart';
 import 'package:me_fit/styles/styles.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:async';
-import 'package:pedometer/pedometer.dart';
 import 'package:lottie/lottie.dart';
 
 class StepsTrackerScreen extends StatefulWidget {
@@ -20,64 +18,64 @@ class StepsTrackerScreen extends StatefulWidget {
 class StepsTrackerScreenState extends State<StepsTrackerScreen> {
   HiveDb db = HiveDb();
   late bool activityRecognitionGranded;
-  late Stream<StepCount> _stepCountStream;
+  // late Stream<StepCount> _stepCountStream;
   int _stepCurrent = 0;
   int _totalSteps = 0;
   int _caloriesBurnedToday = 0;
 
   // initLastStep() async {}
 
-  void onStepCount(StepCount event) async {
-    db.setLastStep(event.steps);
-    await db.setTotalSteps(event.steps);
-    int lastStep = await db.getLastStep();
-    if (mounted) {
-      setState(() {
-        _totalSteps = event.steps;
-        _stepCurrent = lastStep - _totalSteps;
-        print('lastStep - _totalSteps = _stepCurrent');
-        print('$lastStep - $_totalSteps = $_stepCurrent');
+  // void onStepCount(StepCount event) async {
+  //   db.setLastStep(event.steps);
+  //   await db.setTotalSteps(event.steps);
+  //   int lastStep = await db.getLastStep();
+  //   if (mounted) {
+  //     setState(() {
+  //       _totalSteps = event.steps;
+  //       _stepCurrent = lastStep - _totalSteps;
+  //       print('lastStep - _totalSteps = _stepCurrent');
+  //       print('$lastStep - $_totalSteps = $_stepCurrent');
 
-        num stride = widget.userHeightInMeters * 0.414;
-        num distance = stride * _stepCurrent;
+  //       num stride = widget.userHeightInMeters * 0.414;
+  //       num distance = stride * _stepCurrent;
 
-        num time = distance / 3;
-        double MET = 3.5;
+  //       num time = distance / 3;
+  //       double MET = 3.5;
 
-        _caloriesBurnedToday =
-            (time * MET * 3.5 * widget.userWeight / (200 * 60)).round();
-      });
-    }
-    // when sensor value is 0
-    if (_totalSteps == 0) {
-      db.setLastStep(1);
-      setState(() {
-        _stepCurrent = lastStep - _totalSteps;
-      });
-    }
-  }
+  //       _caloriesBurnedToday =
+  //           (time * MET * 3.5 * widget.userWeight / (200 * 60)).round();
+  //     });
+  //   }
+  //   // when sensor value is 0
+  //   if (_totalSteps == 0) {
+  //     db.setLastStep(1);
+  //     setState(() {
+  //       _stepCurrent = lastStep - _totalSteps;
+  //     });
+  //   }
+  // }
 
   void onStepCountError(error) {
     print('onStepCountError: $error');
   }
 
-  void initPlatformState() async {
-    activityRecognitionGranded =
-        await Permission.activityRecognition.request().isGranted;
-    if (activityRecognitionGranded) {
-      _stepCountStream = Pedometer.stepCountStream;
-      _stepCountStream.listen(onStepCount).onError(onStepCountError);
-    } else {
-      Permission.activityRecognition.request();
-    }
+  // void initPlatformState() async {
+  //   activityRecognitionGranded =
+  //       await Permission.activityRecognition.request().isGranted;
+  //   if (activityRecognitionGranded) {
+  //     _stepCountStream = Pedometer.stepCountStream;
+  //     _stepCountStream.listen(onStepCount).onError(onStepCountError);
+  //   } else {
+  //     Permission.activityRecognition.request();
+  //   }
 
-    if (!mounted) return;
-  }
+  //   if (!mounted) return;
+  // }
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
+    // initPlatformState();
   }
 
   @override

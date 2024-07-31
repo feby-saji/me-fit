@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCr8aQwiMiA7lXApy7iWJgt4GwvYURF5uo',
-    appId: '1:1034109967993:android:805fb1f1ec67775732bea8',
+    appId: '1:1034109967993:android:38e2dd0466f7f8e832bea8',
     messagingSenderId: '1034109967993',
     projectId: 'mefit-82cbd',
     storageBucket: 'mefit-82cbd.appspot.com',
