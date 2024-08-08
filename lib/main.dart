@@ -40,7 +40,9 @@ void main() async {
     Box<UserBodyDetails> box =
         await Hive.openBox<UserBodyDetails>('userBodyDetailsBox');
     UserBodyDetails? user = box.get('userbodydetails');
+
     if (user == null) {
+      // Initialize with a date in the past for testing
       UserBodyDetails userBodyDetails = UserBodyDetails(
         height: 0,
         weight: 0,
@@ -53,12 +55,15 @@ void main() async {
         distanceTotal: 0,
         userBmi: 0,
         lastSteps: 1,
-        lastStepTakenDate: DateTime.now().subtract(const Duration(days: 1)),
+        lastStepTakenDate: DateTime.now()
+            .subtract(const Duration(days: 100)), // Ensure this is in the past
         dateIsToday: DateTime.now().subtract(const Duration(days: 1)),
       );
       await box.put('userbodydetails', userBodyDetails);
+      print(
+          'Initialized user data with last step date: ${userBodyDetails.lastStepTakenDate}');
     }
-  } 
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -68,7 +73,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xffFF758B)),

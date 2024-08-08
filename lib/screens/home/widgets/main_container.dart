@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:me_fit/DB/hive_function.dart';
 import 'package:me_fit/screens/home/functions/date_parse.dart';
 import 'package:me_fit/screens/home/home_screen.dart';
 import 'package:me_fit/styles/styles.dart';
@@ -31,6 +32,8 @@ class MainContainerWidget extends StatelessWidget {
               child: ValueListenableBuilder(
                 valueListenable: caloriesBurnedToday,
                 builder: (context, value, child) {
+                  HiveDb().getCaloriesBurnedToday();
+
                   return Text(
                     '${value.toString()} Kcal',
                     style: kbigText.copyWith(fontWeight: FontWeight.w400),

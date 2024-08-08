@@ -10,8 +10,10 @@ class HeightAndWeightInput extends StatefulWidget {
 }
 
 class HeightAndWeightInputState extends State<HeightAndWeightInput> {
-  final TextEditingController _heightController = TextEditingController();
-  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _heightController =
+      TextEditingController(text: '180');
+  final TextEditingController _weightController =
+      TextEditingController(text: '60');
 
   @override
   Widget build(BuildContext context) {

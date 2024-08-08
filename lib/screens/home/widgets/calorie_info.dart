@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:me_fit/screens/home/home_screen.dart';
+import 'package:me_fit/screens/steps/functions/calculate_calorie_burned.dart';
 import 'package:me_fit/styles/styles.dart';
 
 class CaloriesinfoWidget extends StatelessWidget {
@@ -38,6 +39,7 @@ class CaloriesinfoWidget extends StatelessWidget {
                 ValueListenableBuilder(
                   valueListenable: caloriesBurnedTotal,
                   builder: (context, value, child) {
+                    calculateCalorieBuned();
                     return Text(
                       value.toString(),
                       style:

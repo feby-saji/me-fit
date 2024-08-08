@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:me_fit/DB/hive_function.dart';
+import 'package:me_fit/screens/home/home_screen.dart';
 import 'package:me_fit/screens/steps/widgets/closeBtn.dart';
 import 'package:me_fit/styles/styles.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:lottie/lottie.dart';
+
+HiveDb db = HiveDb();
+late bool activityRecognitionGranded;
+
+int _totalSteps = 0;
+int gUserWeight = 0;
+num gUserHeightInMeters = 0;
 
 class StepsTrackerScreen extends StatefulWidget {
   final int userWeight;
@@ -16,72 +23,11 @@ class StepsTrackerScreen extends StatefulWidget {
 }
 
 class StepsTrackerScreenState extends State<StepsTrackerScreen> {
-  HiveDb db = HiveDb();
-  late bool activityRecognitionGranded;
-  // late Stream<StepCount> _stepCountStream;
-  int _stepCurrent = 0;
-  int _totalSteps = 0;
-  int _caloriesBurnedToday = 0;
-
-  // initLastStep() async {}
-
-  // void onStepCount(StepCount event) async {
-  //   db.setLastStep(event.steps);
-  //   await db.setTotalSteps(event.steps);
-  //   int lastStep = await db.getLastStep();
-  //   if (mounted) {
-  //     setState(() {
-  //       _totalSteps = event.steps;
-  //       _stepCurrent = lastStep - _totalSteps;
-  //       print('lastStep - _totalSteps = _stepCurrent');
-  //       print('$lastStep - $_totalSteps = $_stepCurrent');
-
-  //       num stride = widget.userHeightInMeters * 0.414;
-  //       num distance = stride * _stepCurrent;
-
-  //       num time = distance / 3;
-  //       double MET = 3.5;
-
-  //       _caloriesBurnedToday =
-  //           (time * MET * 3.5 * widget.userWeight / (200 * 60)).round();
-  //     });
-  //   }
-  //   // when sensor value is 0
-  //   if (_totalSteps == 0) {
-  //     db.setLastStep(1);
-  //     setState(() {
-  //       _stepCurrent = lastStep - _totalSteps;
-  //     });
-  //   }
-  // }
-
-  void onStepCountError(error) {
-    print('onStepCountError: $error');
-  }
-
-  // void initPlatformState() async {
-  //   activityRecognitionGranded =
-  //       await Permission.activityRecognition.request().isGranted;
-  //   if (activityRecognitionGranded) {
-  //     _stepCountStream = Pedometer.stepCountStream;
-  //     _stepCountStream.listen(onStepCount).onError(onStepCountError);
-  //   } else {
-  //     Permission.activityRecognition.request();
-  //   }
-
-  //   if (!mounted) return;
-  // }
-
   @override
   void initState() {
     super.initState();
-    // initPlatformState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _caloriesBurnedToday = 0;
+    gUserHeightInMeters = widget.userHeightInMeters;
+    gUserWeight = widget.userWeight;
   }
 
   @override
@@ -106,23 +52,29 @@ class StepsTrackerScreenState extends State<StepsTrackerScreen> {
               'Steps Taken today',
               style: kMedText.copyWith(color: Colors.black),
             ),
-            Text(
-              _stepCurrent.abs().toString(),
-              style: const TextStyle(fontSize: 30),
+            ValueListenableBuilder(
+              valueListenable: stepTodayTaken,
+              builder: (context, value, child) {
+                return Text(
+                  stepTodayTaken.value.abs().toString(),
+                  style: const TextStyle(fontSize: 30),
+                );
+              },
             ),
             const Divider(
               height: 10,
               thickness: 0,
               color: Colors.white,
             ),
-            Text(
-                'calories burned : ${_caloriesBurnedToday.abs().round().toString()}'),
+            ValueListenableBuilder(
+              valueListenable: caloriesBurnedToday,
+              builder: (context, value, child) {
+                return Text(
+                    'calories burned : ${caloriesBurnedToday.value.abs().round().toString()}');
+              },
+            ),
             const Spacer(),
-            CloseBtnWidget(
-                db: db,
-                totalSteps: _totalSteps,
-                stepCurrent: _stepCurrent,
-                caloriesBurnedToday: _caloriesBurnedToday),
+            CloseBtnWidget(db: db),
             const SizedBox(height: 20),
           ],
         ),
@@ -130,3 +82,43 @@ class StepsTrackerScreenState extends State<StepsTrackerScreen> {
     );
   }
 }
+
+void onStepCount(int listenerStep) async {
+  // Update the database with the new step count
+  await db.setLastStep(listenerStep);
+  await db.setTotalSteps(listenerStep);
+
+  // Retrieve the last step count from the database
+  int lastStep = await db.getLastStep();
+
+  if (_totalSteps == 0) {
+    await db.setLastStep(listenerStep);
+
+    // setstate
+    stepTodayTaken.value = lastStep - _totalSteps;
+    stepTodayTaken.notifyListeners();
+  }
+
+  _totalSteps = listenerStep;
+  stepTodayTaken.value = lastStep - _totalSteps;
+  stepTodayTaken.notifyListeners();
+
+  // Log the step calculations
+  print('lastStep - _totalSteps = stepTodayTaken');
+  // print('$lastStep - $_totalSteps = ${stepTodayTaken.value}');
+
+  // Calculate stride length and distance
+  num stride = gUserHeightInMeters * 0.414;
+  num distance = stride * stepTodayTaken.value;
+
+  // Calculate time and calories burned
+  num time = distance / 3;
+  double MET = 3.5;
+
+  caloriesBurnedToday.value =
+      (time * MET * 3.5 * gUserWeight / (200 * 60)).round();
+  caloriesBurnedToday.notifyListeners();
+  await db.setCaloriesBurnedToday(caloriesBurnedToday.value);
+}
+
+

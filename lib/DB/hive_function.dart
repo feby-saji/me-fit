@@ -110,8 +110,14 @@ class HiveDb {
 
     caloriesBurnedToday.value = user!.caloriesBurnedToday;
     caloriesBurnedToday.notifyListeners();
-    print(
-        'printng calories burned today notifier ${caloriesBurnedToday.value}');
+  }
+
+  getDailyStepsGoal() async {
+    userBodyDetailsBox = await Hive.openBox('userBodyDetailsBox');
+    UserBodyDetails? user = userBodyDetailsBox.get('userbodydetails');
+
+    stepsGoal.value = user!.dailyStepsGoal;
+    stepsGoal.notifyListeners();
   }
 
 // step tracking
@@ -123,27 +129,39 @@ class HiveDb {
     await userBodyDetailsBox.put('userbodydetails', user);
   }
 
-  setLastStep(lastStep) async {
+  Future<void> setLastStep(int lastStep) async {
     userBodyDetailsBox = await Hive.openBox('userBodyDetailsBox');
     UserBodyDetails? user = userBodyDetailsBox.get('userbodydetails');
 
-    DateTime lastDate = user!.lastStepTakenDate;
+    if (user == null) {
+      print('No user data found in the box.');
+      return;
+    }
+    // Get the last step date and current date
+    DateTime lastDate = user.lastStepTakenDate;
     DateTime todayDate = DateTime.now();
 
     if (DateUtils.isSameDay(lastDate, todayDate)) {
-      print('setLastStep is same day, no functions running');
-      print('lastDate $lastDate');
-      print('today date $todayDate');
+      // Dates are the same; no update needed
+      print('//setLastStep: Dates are the same. No update needed.');
+      print('Last step date: $lastDate');
+      print('Today\'s date: $todayDate');
     } else {
-      print('setLastStep is not same day, updating the date');
-      print('lastDate $lastDate');
-      print('today date $todayDate');
+      // Dates are different; update required
+      print('//setLastStep: Dates are different. Updating the date.');
+      print('Last step date: $lastDate');
+      print('Today\'s date: $todayDate');
+
+      // Update user details
       user.lastSteps = lastStep;
       user.lastStepTakenDate = DateTime.now();
+
+      // Save updated user data
       await userBodyDetailsBox.put('userbodydetails', user);
     }
-    print('settingLastStep func last step parameter passed:  $lastStep');
-    print('settingLastStep func users last step is:  ${user.lastSteps}');
+    // Log the last step parameter and the updated last step
+    print('setLastStep function: Last step parameter passed: $lastStep');
+    print('setLastStep function: User\'s last step is: ${user.lastSteps}');
   }
 
   setTotalSteps(totalSteps) async {
@@ -212,8 +230,7 @@ class HiveDb {
 
     if (!DateUtils.isSameDay(lastDate, todayDate)) {
       user.dailySteps = 0;
-// this might be unnecessary
-      // user.lastStepTakenDate = DateTime.now();
+      user.dateIsToday = DateTime.now();
       await userBodyDetailsBox.put('userbodydetails', user);
     }
   }

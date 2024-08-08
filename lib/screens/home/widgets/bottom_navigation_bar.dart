@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:me_fit/Models/hive_models/user_details.dart';
 import 'package:me_fit/screens/home/home_screen.dart';
+import 'package:me_fit/screens/splash/functions/startlistener.dart';
 import 'package:me_fit/screens/steps/steps_page.dart';
 import 'package:me_fit/screens/weight_height/set_weight_height_screen.dart';
 import 'package:me_fit/screens/workout/workout_screen.dart';
@@ -56,7 +57,11 @@ class _BottomNavigatioinBarState extends State<BottomNavigatioinBar> {
                     });
               }
             } else {
-              Permission.activityRecognition.request();
+              final status = await Permission.activityRecognition.request();
+              if (status.isGranted) {
+                await startListener();
+              }
+
               Get.snackbar('permission needed',
                   'allow activity recognition permission in app settings');
             }

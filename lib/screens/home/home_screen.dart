@@ -1,5 +1,6 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
+import 'package:me_fit/DB/hive_function.dart';
 import 'package:me_fit/screens/home/functions/date_parse2.dart';
 import 'package:me_fit/screens/home/functions/updateGoalCompletePerc.dart';
 import 'package:me_fit/screens/home/widgets/bottom_navigation_bar.dart';
@@ -16,13 +17,15 @@ import 'package:me_fit/widgets/profile_home_screen.dart';
 ValueNotifier<int> stepsGoal = ValueNotifier(0);
 ValueNotifier<double> stepsGoalCompletePer = ValueNotifier(0);
 ValueNotifier<int> caloriesBurnedTotal = ValueNotifier(0);
-ValueNotifier<int> caloriesBurnedToday = ValueNotifier(0);
 ValueNotifier<String> lastWorkOutName = ValueNotifier('');
+ValueNotifier<int> caloriesBurnedToday = ValueNotifier(0);
+ValueNotifier<int> stepTodayTaken = ValueNotifier(0);
 
 class HomeScreen extends StatefulWidget {
   int? stepsToday = 0;
   int? totalSteps = 0;
   int? distanceToday = 0;
+
   HomeScreen({
     super.key,
     required this.stepsToday,
@@ -39,8 +42,14 @@ SizeConfig sizeConfig = SizeConfig();
 
 class HomeScreenState extends State<HomeScreen> {
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     sizeConfig.initSizeConfig(context);
+
     Future.delayed(const Duration(seconds: 3), () {
       updateGoalCompletePercentage();
     });
@@ -66,9 +75,14 @@ class HomeScreenState extends State<HomeScreen> {
                         SizedBox(width: sizeConfig.blockSizeHorizontal * 20),
                         Column(
                           children: [
-                            Text(
-                              widget.stepsToday.toString(),
-                              style: kMedText.copyWith(color: Colors.black),
+                            ValueListenableBuilder(
+                              valueListenable: stepTodayTaken,
+                              builder: (context, value, child) {
+                                return Text(
+                                  value.abs().toString(),
+                                  style: kMedText.copyWith(color: Colors.black),
+                                );
+                              },
                             ),
                             Text(
                               'steps',
