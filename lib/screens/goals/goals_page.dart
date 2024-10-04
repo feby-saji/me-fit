@@ -4,9 +4,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:me_fit/DB/hive_function.dart';
 import 'package:me_fit/Models/hive_models/user_details.dart';
 import 'package:me_fit/screens/goals/choice_chip.dart';
+import 'package:me_fit/screens/home/functions/updateGoalCompletePerc.dart';
 import 'package:me_fit/screens/home/home_screen.dart';
 import 'package:me_fit/styles/styles.dart';
-import 'package:me_fit/screens/home/functions/updateGoalCompletePerc.dart';
 
 class DailyStepsInputPage extends StatefulWidget {
   final bool goToHome;
@@ -86,21 +86,24 @@ class DailyStepsInputPageState extends State<DailyStepsInputPage> {
                 children: [
                   ChoiceChipWidget(
                     function: () {
-                      int currentSteps = int.tryParse(_stepsController.text) ?? 0;
+                      int currentSteps =
+                          int.tryParse(_stepsController.text) ?? 0;
                       _stepsController.text = (currentSteps + 1000).toString();
                     },
                     value: '1000',
                   ),
                   ChoiceChipWidget(
                     function: () {
-                      int currentSteps = int.tryParse(_stepsController.text) ?? 0;
+                      int currentSteps =
+                          int.tryParse(_stepsController.text) ?? 0;
                       _stepsController.text = (currentSteps + 5000).toString();
                     },
                     value: '5,000',
                   ),
                   ChoiceChipWidget(
                     function: () {
-                      int currentSteps = int.tryParse(_stepsController.text) ?? 0;
+                      int currentSteps =
+                          int.tryParse(_stepsController.text) ?? 0;
                       _stepsController.text = (currentSteps + 10000).toString();
                     },
                     value: '10,000',
@@ -113,7 +116,9 @@ class DailyStepsInputPageState extends State<DailyStepsInputPage> {
                   onPressed: () async {
                     if (steptoAddToCtrl > 0) {
                       await setDailySteps();
-                      Box<UserBodyDetails> box = await Hive.openBox<UserBodyDetails>('userBodyDetailsBox');
+                      Box<UserBodyDetails> box =
+                          await Hive.openBox<UserBodyDetails>(
+                              'userBodyDetailsBox');
                       UserBodyDetails? user = box.get('userbodydetails');
 
                       // Notify listeners
@@ -126,9 +131,9 @@ class DailyStepsInputPageState extends State<DailyStepsInputPage> {
 
                       if (widget.goToHome) {
                         Get.offAll(HomeScreen(
-                          stepsToday: user.dailySteps,
-                          totalSteps: user.totalSteps,
-                          distanceToday: user.distanceToday,
+                          stepsToday: user?.dailySteps ?? 0,
+                          distanceToday: user?.distanceToday ?? 0,
+                          totalSteps: user?.totalSteps ?? 0,
                         ));
                       } else {
                         Get.back();

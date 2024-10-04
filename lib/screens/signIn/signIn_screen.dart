@@ -89,9 +89,9 @@ class SignInScreen extends StatelessWidget {
                           hiveDb.getLastWorkout();
                           googleUser = true;
                           Get.offAll(() => HomeScreen(
-                                stepsToday: user.dailySteps,
-                                distanceToday: user.distanceToday,
-                                totalSteps: user.totalSteps,
+                                stepsToday: user?.dailySteps ?? 0,
+                                distanceToday: user?.distanceToday ?? 0,
+                                totalSteps: user?.totalSteps ?? 0,
                               ));
                         },
                         child: GoogleSignInBtn(sizeConfig: sizeConfig)),

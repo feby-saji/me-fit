@@ -6,8 +6,8 @@ updateGoalCompletePercentage() async {
   Box<UserBodyDetails> box =
       await Hive.openBox<UserBodyDetails>('userBodyDetailsBox');
   UserBodyDetails? user = box.get('userbodydetails');
-  if (user?.dailySteps != null && stepsGoal.value != 0) {
-    double? normalizedValue = ((user!.dailySteps / stepsGoal.value) * 100);
+  if (stepTodayTaken != null && stepsGoal.value != 0) {
+    double? normalizedValue = ((stepTodayTaken.value / stepsGoal.value) * 100);
 
     stepsGoalCompletePer.value = normalizedValue;
     stepsGoalCompletePer.notifyListeners();

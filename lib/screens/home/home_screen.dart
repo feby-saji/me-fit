@@ -1,6 +1,5 @@
 // ignore_for_file: must_be_immutable
 import 'package:flutter/material.dart';
-import 'package:me_fit/DB/hive_function.dart';
 import 'package:me_fit/screens/home/functions/date_parse2.dart';
 import 'package:me_fit/screens/home/functions/updateGoalCompletePerc.dart';
 import 'package:me_fit/screens/home/widgets/bottom_navigation_bar.dart';
@@ -13,6 +12,8 @@ import 'package:me_fit/screens/home/widgets/vertical_bar.dart';
 import 'package:me_fit/styles/size_config.dart';
 import 'package:me_fit/styles/styles.dart';
 import 'package:me_fit/widgets/profile_home_screen.dart';
+
+import '../splash/functions/gotoscreen.dart';
 
 ValueNotifier<int> stepsGoal = ValueNotifier(0);
 ValueNotifier<double> stepsGoalCompletePer = ValueNotifier(0);
@@ -43,7 +44,10 @@ SizeConfig sizeConfig = SizeConfig();
 class HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
+    // start step count listener
+    getPermissionActivityRecognition(context);
   }
 
   @override

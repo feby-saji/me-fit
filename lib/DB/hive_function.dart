@@ -77,10 +77,10 @@ class HiveDb {
       await userBodyDetailsBox.put('userbodydetails', user);
     }
 
-    caloriesBurnedToday.value = user.caloriesBurnedToday;
-    caloriesBurnedToday.notifyListeners();
-    print(
-        'printng calories burned today notifier ${caloriesBurnedToday.value}');
+    // caloriesBurnedToday.value = user.caloriesBurnedToday;
+    // caloriesBurnedToday.notifyListeners();
+    // print(
+    //     'printng calories burned today notifier ${caloriesBurnedToday.value}');
   }
 
   setCaloriesBurnedTotal(int calBurnedToday) async {
@@ -182,6 +182,18 @@ class HiveDb {
     user!.height = height;
     user.weight = weight;
     await userBodyDetailsBox.put('userbodydetails', user);
+  }
+
+  Future<int> getUserHeight() async {
+    userBodyDetailsBox = await Hive.openBox('userBodyDetailsBox');
+    UserBodyDetails? user = userBodyDetailsBox.get('userbodydetails');
+    return Future.value(user?.height);
+  }
+
+  Future<int> getUserWeight() async {
+    userBodyDetailsBox = await Hive.openBox('userBodyDetailsBox');
+    UserBodyDetails? user = userBodyDetailsBox.get('userbodydetails');
+    return Future.value(user?.weight);
   }
 
   getTodaySteps(lastStep) async {

@@ -18,7 +18,7 @@ class SplashScreenState extends State<SplashScreen> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Future.delayed(const Duration(seconds: 1), () {
-        goToScreen();
+        goToScreen(context);
       });
     });
 

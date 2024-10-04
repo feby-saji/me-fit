@@ -39,7 +39,7 @@ class CaloriesinfoWidget extends StatelessWidget {
                 ValueListenableBuilder(
                   valueListenable: caloriesBurnedTotal,
                   builder: (context, value, child) {
-                    calculateCalorieBuned();
+                    calculateCalorieBurned();
                     return Text(
                       value.toString(),
                       style:

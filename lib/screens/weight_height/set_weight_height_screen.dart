@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:me_fit/DB/hive_function.dart';
+import 'package:me_fit/screens/splash/functions/startlistener.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HeightAndWeightInput extends StatefulWidget {
   const HeightAndWeightInput({super.key});
@@ -55,6 +57,12 @@ class HeightAndWeightInputState extends State<HeightAndWeightInput> {
                       int.parse(_heightController.text),
                       int.parse(_weightController.text));
                   Get.back();
+
+                  // start step count listener if permission granted
+                  bool activityRecognitionGranded =
+                      await Permission.activityRecognition.request().isGranted;
+
+                  if (activityRecognitionGranded) startListener();
                 },
                 child: const Text(
                   'Submit',

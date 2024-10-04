@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:me_fit/Models/hive_models/user_details.dart';
 import 'package:me_fit/screens/home/home_screen.dart';
 
-calculateCalorieBuned() async {
+calculateCalorieBurned() async {
   Box<UserBodyDetails> box = await Hive.openBox('userBodyDetailsBox');
   UserBodyDetails? user = box.get('userbodydetails');
 
